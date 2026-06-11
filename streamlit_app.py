@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 # Google Apps Script URL (сіздің URL-іңіз)
-APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwui6LgqaV-SjkyLsv3gZEeUvrZ2v9NT65WAc8C7dcA2p5lIz2GU_roRcZpm06e3v-8/exec"
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFS3PLzjfxQjcQTGzbmMTuXmS33jJYVc-1gF98zvmrW6I9NMBsrPljFlAyeys_NRc2/exec"
 
 # Бет конфигурациясы
 st.set_page_config(
