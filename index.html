@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тамақтану сапасын бағалау | Жас дарын</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f5b042, #ff8c00);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header p { font-size: 14px; opacity: 0.95; }
+        .content { padding: 30px; }
+        .grade-section, .rating-section { margin-bottom: 25px; }
+        .grade-title, .rating-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 16px;
+        }
+        .grade-buttons, .rating-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .grade-btn, .rating-option {
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .grade-btn.active, .rating-option.selected {
+            background: linear-gradient(135deg, #ffc107, #ff8c00);
+            border-color: #ff8c00;
+            color: white;
+            transform: scale(0.96);
+        }
+        .rating-option {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            border-radius: 24px;
+        }
+        .rating-value { font-size: 48px; font-weight: bold; }
+        .rating-text { font-size: 12px; margin-top: 5px; }
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 16px;
+            width: 100%;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .submit-btn:hover { transform: scale(0.98); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .status {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        @media (max-width: 500px) {
+            .rating-value { font-size: 32px; }
+            .grade-btn { padding: 8px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <h1>🍲 Тамақты бағалау</h1>
+            <p>Жас дарын</p>
+        </div>
+        <div class="content">
+            <div class="grade-section">
+                <div class="grade-title">📚 Сыныпты таңдаңыз:</div>
+                <div class="grade-buttons" id="gradeButtons"></div>
+            </div>
+            <div class="rating-section">
+                <div class="rating-title">⭐ Тамақ сапасын бағалаңыз:</div>
+                <div class="rating-options" id="ratingOptions">
+                    <div class="rating-option" data-score="5"><div class="rating-value">5</div><div class="rating-text">Өте дәмді</div></div>
+                    <div class="rating-option" data-score="4"><div class="rating-value">4</div><div class="rating-text">Қанағаттанарлық</div></div>
+                    <div class="rating-option" data-score="3"><div class="rating-value">3</div><div class="rating-text">Төмен</div></div>
+                </div>
+            </div>
+            <button class="submit-btn" id="submitBtn">✨ Бағалауды жіберу ✨</button>
+            <div id="status" class="status">👆 Сынып пен бағаны таңдаңыз</div>
+        </div>
+        <div class="footer">⏱️ Деректер Google кестеге сақталады | GitHub: aidarpavl/Stolovaya_ball</div>
+    </div>
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylFEcJRRl27E6z8S3D79DG_2_Cmq2xOnafTh_jVWwH_cg1aB32r-LF5Az41F5i-rAi/exec";
+        let selectedGrade = null, selectedScore = null;
+        const grades = ["5 сынып", "6 сынып", "7 сынып", "8 сынып", "9 сынып", "10 сынып", "11 сынып"];
+        const gradeContainer = document.getElementById('gradeButtons');
+        grades.forEach(grade => {
+            const btn = document.createElement('div');
+            btn.className = 'grade-btn';
+            btn.textContent = grade;
+            btn.onclick = () => {
+                document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedGrade = grade;
+                updateStatus();
+            };
+            gradeContainer.appendChild(btn);
+        });
+        document.querySelectorAll('.rating-option').forEach(opt => {
+            opt.onclick = () => {
+                document.querySelectorAll('.rating-option').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                selectedScore = parseInt(opt.dataset.score);
+                updateStatus();
+            };
+        });
+        function updateStatus() {
+            const s = document.getElementById('status');
+            if (selectedGrade && selectedScore) {
+                s.innerHTML = `✅ Таңдалған: ${selectedGrade}, баға: ${selectedScore} балл. Жіберуге дайын!`;
+                s.style.background = "#d4edda"; s.style.color = "#155724";
+            } else if (selectedGrade) {
+                s.innerHTML = `⚠️ ${selectedGrade} таңдалды. Енді баға таңдаңыз`;
+                s.style.background = "#fff3cd"; s.style.color = "#856404";
+            } else if (selectedScore) {
+                s.innerHTML = `⚠️ Баға: ${selectedScore} балл. Енді сынып таңдаңыз`;
+                s.style.background = "#fff3cd"; s.style.color = "#856404";
+            } else {
+                s.innerHTML = `👆 Сынып пен тамақ сапасын таңдаңыз`;
+                s.style.background = "#f8f9fa"; s.style.color = "#6c757d";
+            }
+        }
+        function getDateTime() {
+            const n = new Date();
+            return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')} ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+        }
+        async function submitData() {
+            if (!selectedGrade) { alert('Сыныпты таңдаңыз!'); return; }
+            if (!selectedScore) { alert('Тамақ сапасын бағалаңыз!'); return; }
+            const btn = document.getElementById('submitBtn');
+            const s = document.getElementById('status');
+            btn.disabled = true; btn.textContent = "⏳ Жіберілуде...";
+            s.innerHTML = "📡 Google кестеге жазылуда..."; s.style.background = "#cce5ff"; s.style.color = "#004085";
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ grade: selectedGrade, score: selectedScore, timestamp: getDateTime() })
+                });
+                const result = await res.json();
+                if (result.result === "success") {
+                    s.innerHTML = `✅ Сәтті сақталды! 📅 ${getDateTime()}<br>📚 ${selectedGrade} | ⭐ ${selectedScore} балл`;
+                    s.style.background = "#d4edda"; s.style.color = "#155724";
+                    document.querySelectorAll('.grade-btn.active, .rating-option.selected').forEach(el => el.classList.remove('active', 'selected'));
+                    selectedGrade = null; selectedScore = null;
+                    setTimeout(() => updateStatus(), 3000);
+                } else throw new Error(result.message || "Қате");
+            } catch(e) {
+                s.innerHTML = `❌ Қате: ${e.message}<br>🔧 Интернетті тексеріңіз`;
+                s.style.background = "#f8d7da"; s.style.color = "#721c24";
+            } finally {
+                btn.disabled = false; btn.textContent = "✨ Бағалауды жіберу ✨";
+            }
+        }
+        document.getElementById('submitBtn').onclick = submitData;
+        updateStatus();
+    </script>
+</body>
+</html>
