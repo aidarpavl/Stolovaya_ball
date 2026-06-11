@@ -39,12 +39,12 @@
             color: #333;
             font-size: 16px;
         }
-        .grade-buttons, .rating-options {
+        .grade-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-        .grade-btn, .rating-option {
+        .grade-btn {
             background: #f5f5f5;
             border: 2px solid #e0e0e0;
             border-radius: 50px;
@@ -53,17 +53,33 @@
             transition: all 0.3s;
             font-weight: 500;
         }
-        .grade-btn.active, .rating-option.selected {
+        .grade-btn:hover { background: #ffecb3; border-color: #ffc107; }
+        .grade-btn.active {
             background: linear-gradient(135deg, #ffc107, #ff8c00);
             border-color: #ff8c00;
             color: white;
             transform: scale(0.96);
         }
+        .rating-options {
+            display: flex;
+            gap: 15px;
+        }
         .rating-option {
             flex: 1;
-            text-align: center;
-            padding: 20px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
             border-radius: 24px;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .rating-option:hover { background: #ffecb3; border-color: #ffc107; }
+        .rating-option.selected {
+            background: linear-gradient(135deg, #ffc107, #ff8c00);
+            border-color: #ff8c00;
+            color: white;
+            transform: scale(0.96);
         }
         .rating-value { font-size: 48px; font-weight: bold; }
         .rating-text { font-size: 12px; margin-top: 5px; }
@@ -99,6 +115,7 @@
         @media (max-width: 500px) {
             .rating-value { font-size: 32px; }
             .grade-btn { padding: 8px 16px; }
+            .rating-options { gap: 8px; }
         }
     </style>
 </head>
@@ -116,20 +133,38 @@
             <div class="rating-section">
                 <div class="rating-title">⭐ Тамақ сапасын бағалаңыз:</div>
                 <div class="rating-options" id="ratingOptions">
-                    <div class="rating-option" data-score="5"><div class="rating-value">5</div><div class="rating-text">Өте дәмді</div></div>
-                    <div class="rating-option" data-score="4"><div class="rating-value">4</div><div class="rating-text">Қанағаттанарлық</div></div>
-                    <div class="rating-option" data-score="3"><div class="rating-value">3</div><div class="rating-text">Төмен</div></div>
+                    <div class="rating-option" data-score="5">
+                        <div class="rating-value">5</div>
+                        <div class="rating-text">Өте дәмді</div>
+                    </div>
+                    <div class="rating-option" data-score="4">
+                        <div class="rating-value">4</div>
+                        <div class="rating-text">Қанағаттанарлық</div>
+                    </div>
+                    <div class="rating-option" data-score="3">
+                        <div class="rating-value">3</div>
+                        <div class="rating-text">Төмен</div>
+                    </div>
                 </div>
             </div>
             <button class="submit-btn" id="submitBtn">✨ Бағалауды жіберу ✨</button>
             <div id="status" class="status">👆 Сынып пен бағаны таңдаңыз</div>
         </div>
-        <div class="footer">⏱️ Деректер Google кестеге сақталады | GitHub: aidarpavl/Stolovaya_ball</div>
+        <div class="footer">
+            ⏱️ Деректер Google кестеге сақталада
+        </div>
     </div>
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOcebe674XQj8iTvjyHZX0dM0uDYY4651rJYo11YCcKk1CGkgUkAOM3-7nvwuuj5Nf/exec";
-      let selectedGrade = null, selectedScore = null;
+        // 🔴 МЫНА ЖЕРГЕ ӨЗІҢІЗДІҢ ЖАҢА APPS SCRIPT URL-ІҢІЗДІ ҚОЙЫҢЫЗ!
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvPVL4TfFC2OpS35eINyGZgAyKMc62Q2mnoPbutL6xbveVa3vAZHomPleEuWLYjmo/exec";
+        
+        let selectedGrade = null;
+        let selectedScore = null;
+        
+        // Сыныптар
         const grades = ["5 сынып", "6 сынып", "7 сынып", "8 сынып", "9 сынып", "10 сынып", "11 сынып"];
+        
+        // Сынып батырмалары
         const gradeContainer = document.getElementById('gradeButtons');
         grades.forEach(grade => {
             const btn = document.createElement('div');
@@ -143,6 +178,8 @@
             };
             gradeContainer.appendChild(btn);
         });
+        
+        // Бағалау батырмалары
         document.querySelectorAll('.rating-option').forEach(opt => {
             opt.onclick = () => {
                 document.querySelectorAll('.rating-option').forEach(o => o.classList.remove('selected'));
@@ -151,55 +188,110 @@
                 updateStatus();
             };
         });
+        
         function updateStatus() {
-            const s = document.getElementById('status');
+            const statusDiv = document.getElementById('status');
             if (selectedGrade && selectedScore) {
-                s.innerHTML = `✅ Таңдалған: ${selectedGrade}, баға: ${selectedScore} балл. Жіберуге дайын!`;
-                s.style.background = "#d4edda"; s.style.color = "#155724";
+                statusDiv.innerHTML = `✅ Таңдалған: ${selectedGrade}, баға: ${selectedScore} балл. Жіберуге дайын!`;
+                statusDiv.style.background = "#d4edda";
+                statusDiv.style.color = "#155724";
             } else if (selectedGrade) {
-                s.innerHTML = `⚠️ ${selectedGrade} таңдалды. Енді баға таңдаңыз`;
-                s.style.background = "#fff3cd"; s.style.color = "#856404";
+                statusDiv.innerHTML = `⚠️ ${selectedGrade} таңдалды. Енді баға таңдаңыз`;
+                statusDiv.style.background = "#fff3cd";
+                statusDiv.style.color = "#856404";
             } else if (selectedScore) {
-                s.innerHTML = `⚠️ Баға: ${selectedScore} балл. Енді сынып таңдаңыз`;
-                s.style.background = "#fff3cd"; s.style.color = "#856404";
+                statusDiv.innerHTML = `⚠️ Баға: ${selectedScore} балл. Енді сынып таңдаңыз`;
+                statusDiv.style.background = "#fff3cd";
+                statusDiv.style.color = "#856404";
             } else {
-                s.innerHTML = `👆 Сынып пен тамақ сапасын таңдаңыз`;
-                s.style.background = "#f8f9fa"; s.style.color = "#6c757d";
+                statusDiv.innerHTML = `👆 Сынып пен тамақ сапасын таңдаңыз`;
+                statusDiv.style.background = "#f8f9fa";
+                statusDiv.style.color = "#6c757d";
             }
         }
+        
         function getDateTime() {
-            const n = new Date();
-            return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')} ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         }
+        
         async function submitData() {
-            if (!selectedGrade) { alert('Сыныпты таңдаңыз!'); return; }
-            if (!selectedScore) { alert('Тамақ сапасын бағалаңыз!'); return; }
-            const btn = document.getElementById('submitBtn');
-            const s = document.getElementById('status');
-            btn.disabled = true; btn.textContent = "⏳ Жіберілуде...";
-            s.innerHTML = "📡 Google кестеге жазылуда..."; s.style.background = "#cce5ff"; s.style.color = "#004085";
+            if (!selectedGrade) {
+                alert('Сыныпты таңдаңыз!');
+                return;
+            }
+            if (!selectedScore) {
+                alert('Тамақ сапасын бағалаңыз!');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const statusDiv = document.getElementById('status');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = "⏳ Жіберілуде...";
+            statusDiv.innerHTML = "📡 Google кестеге жазылуда... Күте тұрыңыз";
+            statusDiv.style.background = "#cce5ff";
+            statusDiv.style.color = "#004085";
+            
+            const data = {
+                grade: selectedGrade,
+                score: selectedScore,
+                timestamp: getDateTime()
+            };
+            
+            console.log("Жіберілетін деректер:", data);
+            console.log("URL:", SCRIPT_URL);
+            
             try {
-                const res = await fetch(SCRIPT_URL, {
+                const response = await fetch(SCRIPT_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ grade: selectedGrade, score: selectedScore, timestamp: getDateTime() })
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data)
                 });
-                const result = await res.json();
+                
+                console.log("HTTP статус:", response.status);
+                
+                const result = await response.json();
+                console.log("Сервер жауабы:", result);
+                
                 if (result.result === "success") {
-                    s.innerHTML = `✅ Сәтті сақталды! 📅 ${getDateTime()}<br>📚 ${selectedGrade} | ⭐ ${selectedScore} балл`;
-                    s.style.background = "#d4edda"; s.style.color = "#155724";
-                    document.querySelectorAll('.grade-btn.active, .rating-option.selected').forEach(el => el.classList.remove('active', 'selected'));
-                    selectedGrade = null; selectedScore = null;
+                    statusDiv.innerHTML = `✅ Сәтті сақталды!<br>📅 ${data.timestamp}<br>📚 ${selectedGrade}<br>⭐ ${selectedScore} балл`;
+                    statusDiv.style.background = "#d4edda";
+                    statusDiv.style.color = "#155724";
+                    
+                    // Таңдауларды тазалау
+                    document.querySelectorAll('.grade-btn.active').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.rating-option.selected').forEach(opt => opt.classList.remove('selected'));
+                    selectedGrade = null;
+                    selectedScore = null;
+                    
                     setTimeout(() => updateStatus(), 3000);
-                } else throw new Error(result.message || "Қате");
-            } catch(e) {
-                s.innerHTML = `❌ Қате: ${e.message}<br>🔧 Интернетті тексеріңіз`;
-                s.style.background = "#f8d7da"; s.style.color = "#721c24";
+                } else {
+                    throw new Error(result.message || "Белгісіз қате");
+                }
+                
+            } catch (error) {
+                console.error("Қате:", error);
+                statusDiv.innerHTML = `❌ Қате: ${error.message}<br><br>🔧 Тексеріңіз:<br>• Apps Script "Кез келген адам" ретінде орналастырылған ба?<br>• Жаңа URL қойылды ма?<br>• Интернет байланысы бар ма?`;
+                statusDiv.style.background = "#f8d7da";
+                statusDiv.style.color = "#721c24";
             } finally {
-                btn.disabled = false; btn.textContent = "✨ Бағалауды жіберу ✨";
+                submitBtn.disabled = false;
+                submitBtn.textContent = "✨ Бағалауды жіберу ✨";
             }
         }
-        document.getElementById('submitBtn').onclick = submitData;
+        
+        document.getElementById('submitBtn').addEventListener('click', submitData);
         updateStatus();
     </script>
 </body>
